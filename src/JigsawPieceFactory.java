@@ -3,6 +3,7 @@ import java.awt.Color;
 import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
 import java.io.File;
@@ -11,10 +12,11 @@ import java.util.Random;
 import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
 
+
 public class JigsawPieceFactory {
 
 	BufferedImage image;
-	BufferedImage[] pieceTextures;
+	JigsawPiece[] pieces;
 	
 	static final int WIDTH = 2;
 	static final int HEIGHT = 2;
@@ -28,7 +30,8 @@ public class JigsawPieceFactory {
 			System.err.println("Could not load image from file : " + imagePath);
 			e.printStackTrace();
 		}
-		pieceTextures = new BufferedImage[WIDTH * HEIGHT];
+		System.out.println("Image Type: " + image.getType());
+		pieces = new JigsawPiece[WIDTH * HEIGHT];
 		splitImage();
 	}
 	
@@ -41,50 +44,57 @@ public class JigsawPieceFactory {
 			for(int j = 0; j < WIDTH; j++) {
 				int textureIndex = i * HEIGHT + j;
 				BufferedImage pieceTexture = new BufferedImage(pieceWidth, pieceHeight, image.getType());
-				Raster crop = image.getRaster().createChild(j * pieceWidth, i * pieceHeight, pieceWidth, pieceHeight, 0, 0, null);
+				int width = (int) (j * pieceWidth + (int)(pieceWidth * 1.5) > image.getWidth() ? pieceWidth : pieceWidth * 1.5);
+				int height = (int) (i * pieceHeight + (int)(pieceHeight * 1.5) > image.getHeight() ? pieceHeight : pieceHeight * 1.5);
+				int startX = (int) (j * pieceWidth - pieceWidth * 0.25 > 0 ? j * pieceWidth - pieceWidth * 0.25: 0);
+				int startY = (int)(i * pieceHeight - pieceHeight * 0.25 > 0 ? i * pieceWidth - pieceWidth * 0.25 : 0);
+				Raster crop = image.getRaster().createChild(startX, startY, width, height, 0, 0, null);
 				pieceTexture.setData(crop);
-				pieceTextures[textureIndex] = pieceTexture;
+				if(textureIndex == 1)
+					pieces[textureIndex] = new JigsawPiece(new Point(j * pieceWidth - 65, i * pieceHeight), pieceTexture);
+				else
+					pieces[textureIndex] = new JigsawPiece(new Point(j * pieceWidth, i * pieceHeight), pieceTexture);
 			}
 		}
 	}
 	
-	public BufferedImage[] getPieceTextures() {
-		return pieceTextures;
+	public JigsawPiece[] getPieces() {
+		return pieces;
 	}
 	
 	
-	public static class ImageCanvas extends Canvas {
+	public static class JigsawCanvas extends Canvas {
 
 		private static final long serialVersionUID = 1L;
-		BufferedImage[] img;
+		JigsawPiece[] pieces;
 		Random r;
 		
-		public ImageCanvas(BufferedImage[] images) {
-			img = images;
+		public JigsawCanvas(JigsawPiece[] pieces) {
+			this.pieces = pieces;
 			r = new Random();
 		}
 		
 		
 		public void paint(Graphics g) {
-			for(int i = 0; i < img.length; i++) {
-				int x = r.nextInt(500);
-				int y = r.nextInt(500);
-				g.drawImage(img[i], x, y, null);
-			}
+			for(int i = 0; i < pieces.length; i++)
+				pieces[i].paint(g);
 		}
 	}
 	
 	public static void main(String[] args) {
 		
-		JigsawPieceFactory factory = new JigsawPieceFactory("test.jpg");
-		BufferedImage[] pieces = factory.getPieceTextures();
+		JigsawPieceFactory factory = new JigsawPieceFactory("test.png");
+		JigsawPiece[] pieces = factory.getPieces();
+		pieces[0].addLatch(JigsawPiece.Side.Right);
+		pieces[0].addNotch(JigsawPiece.Side.Bottom);
+		pieces[1].addNotch(JigsawPiece.Side.Left);
 		
 		Frame frame = new Frame();
-		Canvas canvas = new ImageCanvas(pieces);
+		Canvas canvas = new JigsawCanvas(pieces);
 		
 		frame.add(canvas);
-		
-		frame.setSize(500, 500);
+		frame.setBackground(Color.MAGENTA);
+		frame.setSize(1024, 1024);
 		frame.setLayout(new BoxLayout(frame, BoxLayout.X_AXIS));
 		frame.setVisible(true);
 	}
