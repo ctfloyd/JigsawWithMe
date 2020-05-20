@@ -29,7 +29,7 @@ public class JigsawPiece {
 	// transparency to 0;
 	public JigsawPiece(Point position, BufferedImage image) {
 		this.position = position;
-		texture = new JigsawTexture(image);
+		texture = new JigsawTexture(image, 1.5);
 		latched = new EnumMap<>(Side.class);
 		neighbors = new EnumMap<>(Side.class);
 		notched = new EnumMap<>(Side.class);
@@ -58,7 +58,7 @@ public class JigsawPiece {
 		latched.put(side, true);
 		notched.put(side, false);
 
-		texture.addLatch(side, 30);
+		texture.addLatch(side, 20);
 		JigsawPiece neighbor = neighbors.get(side);
 		if (neighbor == null)
 			return;
@@ -75,7 +75,7 @@ public class JigsawPiece {
 		notched.put(side, true);
 		latched.put(side, false);
 
-		texture.addNotch(side, 30);
+		texture.addNotch(side, 20);
 
 		JigsawPiece neighbor = neighbors.get(side);
 		if (neighbor == null)
