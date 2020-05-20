@@ -1,0 +1,22 @@
+<html>
+<head>
+<title> Websocket Test </title>
+</head>
+<script>
+	let websocket = new WebSocket("ws://127.0.0.1:8042");
+	let buf = new ArrayBuffer(9);
+	let uid = 123; // <int, 4 bytes>
+	let positionX = 1024; // <short, 2 bytes>
+	let positionY = 1000; // <short, 2 bytes>
+	let rotation = 3;     // <byte, 1 byte>
+	let view = new DataView(buf, 0);
+	view.setInt32(0, uid);
+	view.setInt16(4, positionX);
+	view.setInt16(6, positionY);
+	view.setInt8(8, rotation);
+	console.log(view);
+	websocket.onopen = function (event) {
+		websocket.send(view.buffer);
+	}
+</script>
+</html>
