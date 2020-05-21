@@ -3,7 +3,7 @@
 <title> Websocket Test </title>
 </head>
 <script>
-	let websocket = new WebSocket("ws://127.0.0.1:8042");
+	let websocket = new WebSocket("ws://127.0.0.1:8081");
 	let buf = new ArrayBuffer(9);
 	let uid = 123; // <int, 4 bytes>
 	let positionX = 1024; // <short, 2 bytes>
@@ -19,4 +19,7 @@
 		websocket.send(view.buffer);
 	}
 </script>
+<body>
+<center> <h1> Hello WebSockets! </h1> </center>
+</body>
 </html>
