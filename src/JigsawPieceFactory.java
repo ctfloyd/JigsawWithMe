@@ -1,9 +1,7 @@
 import java.awt.Canvas;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
@@ -42,7 +40,7 @@ public class JigsawPieceFactory {
 		int pieceHeight = imageHeight / HEIGHT;
 		for (int i = 0; i < HEIGHT; i++) {
 			for (int j = 0; j < WIDTH; j++) {
-				int textureIndex = i * HEIGHT + j;
+				short textureIndex = (short) (i * HEIGHT + j);
 				BufferedImage pieceTexture = new BufferedImage(pieceWidth, pieceHeight, image.getType());
 				int width = (int) (j * pieceWidth + (int) (pieceWidth * 1.5) > image.getWidth() ? pieceWidth
 						: pieceWidth * 1.5);
@@ -54,7 +52,7 @@ public class JigsawPieceFactory {
 				
 				Raster crop = image.getRaster().createChild(startX, startY, width, height, 0, 0, null);
 				pieceTexture.setData(crop);
-				pieces[textureIndex] = new JigsawPiece(new Point(j * pieceWidth, i * pieceHeight), pieceTexture);
+				pieces[textureIndex] = new JigsawPiece(new Point(j * pieceWidth, i * pieceHeight), pieceTexture, textureIndex);
 			}
 		}
 	}

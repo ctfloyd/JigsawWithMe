@@ -1,17 +1,7 @@
 import java.awt.Graphics;
 import java.awt.Point;
-import java.awt.geom.Point2D;
-import java.awt.geom.Point2D.Double;
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBuffer;
-import java.awt.image.Raster;
-import java.awt.image.WritableRaster;
-import java.io.File;
-import java.util.ArrayList;
 import java.util.EnumMap;
-import java.util.Random;
-
-import javax.imageio.ImageIO;
 
 public class JigsawPiece {
 
@@ -24,11 +14,13 @@ public class JigsawPiece {
 	private EnumMap<Side, Boolean> latched;
 	private EnumMap<Side, Boolean> notched;
 	private EnumMap<Side, JigsawPiece> neighbors;
+	private short id;
 
 	// Assumes a scaled image to account for latches and notches, sets unused pixels
 	// transparency to 0;
-	public JigsawPiece(Point position, BufferedImage image) {
+	public JigsawPiece(Point position, BufferedImage image, short id) {
 		this.position = position;
+		this.id = id;
 		texture = new JigsawTexture(image, 1.5);
 		latched = new EnumMap<>(Side.class);
 		neighbors = new EnumMap<>(Side.class);
@@ -49,6 +41,14 @@ public class JigsawPiece {
 
 	public boolean isSideNotched(Side side) {
 		return notched.get(side);
+	}
+	
+	public JigsawTexture getTexture() {
+		return texture;
+	}
+	
+	public short getId() {
+		return id;
 	}
 
 	public void addLatch(Side side) {
