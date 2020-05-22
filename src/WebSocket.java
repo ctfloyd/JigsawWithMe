@@ -28,6 +28,25 @@ public class WebSocket {
 		handshake();
 	}
 	
+	public void send(byte[] data) throws IOException {
+		if(data.length > 125)
+			return;
+		
+		// TODO: Convert this stuff into a class
+		byte firstByte = (byte) 0b10000010;
+		byte secondByte = (byte) (0x0 | data.length);
+		byte[] sendData = new byte[2 + data.length];
+		sendData[0] = firstByte;
+		sendData[1] = secondByte;
+		for(int i = 0; i < data.length; i++) {
+			sendData[i + 2] = data[i];
+			System.out.print((char)data[i]);
+		}
+		System.out.println();
+		output.write(sendData, 0, sendData.length);
+		output.flush();
+	}
+	
 	public byte[] recv(int numBytes) throws IOException {
 		int len = 0;
 		int protocolLength = 6;
