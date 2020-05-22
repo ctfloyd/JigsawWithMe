@@ -6,7 +6,10 @@ import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
-import java.util.Random;
+import java.io.File;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
 
 public class JigsawTexture {
 
@@ -24,6 +27,11 @@ public class JigsawTexture {
 		effectiveHeight = (int)(image.getHeight() / scalar);
 		this.scalar = scalar;
 		System.out.println("Effective Dimensions: " + effectiveWidth + "x" + effectiveHeight);
+	}
+	
+	public void writeToFile(String path, String filename) throws IOException {
+		File outFile = new File(path + filename);
+		ImageIO.write(texture, "png", outFile);
 	}
 	
 	private Point[] getCirclePoints(Point center, double radius, int numPoints) {
