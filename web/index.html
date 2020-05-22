@@ -2,24 +2,63 @@
 <head>
 <title> Websocket Test </title>
 </head>
-<script>
-	let websocket = new WebSocket("ws://127.0.0.1:8081");
-	let buf = new ArrayBuffer(9);
-	let uid = 123; // <int, 4 bytes>
-	let positionX = 1024; // <short, 2 bytes>
-	let positionY = 1000; // <short, 2 bytes>
-	let rotation = 3;     // <byte, 1 byte>
-	let view = new DataView(buf, 0);
-	view.setInt32(0, uid);
-	view.setInt16(4, positionX);
-	view.setInt16(6, positionY);
-	view.setInt8(8, rotation);
-	console.log(view);
-	websocket.onopen = function (event) {
-		websocket.send(view.buffer);
-	}
-</script>
 <body>
 <center> <h1> Hello WebSockets! </h1> </center>
+<canvas id="game" width="1280px" height="720px"></canvas>
 </body>
+<script>
+	function makePuzzlePacket(uid, posX, posY, rot) {
+		let buf = new ArrayBuffer(9);
+		let view = new DataView(buf, 0);
+		view.setInt32(0, uid);
+		view.setInt16(4, posX);
+		view.setInt16(6, posY);
+		view.setInt8(8, rot);
+		return view;
+	}
+	
+	let websocket = new WebSocket("ws://127.0.0.1:8081");
+	websocket.onopen = function (event) {
+		let canvas = document.getElementById('game');
+		canvas.addEventListener('mousemove', mouseMoveHandler);
+	}
+	websocket.onmessage = async function (event) {
+		let buffer = await event.data.arrayBuffer();
+		let texturePath = String.fromCharCode.apply(null, new Uint8Array(buffer));
+		
+		let request = new XMLHttpRequest();
+		let canvas = document.getElementById('game');
+		let ctx = canvas.getContext('2d');
+		
+		let image = new Image();
+		image.src = "http://localhost:8080/" + texturePath;
+		image.onload = async function() {
+			let bitmap = await createImageBitmap(image);
+			console.log(bitmap);
+			let randomX = Math.floor(Math.random() * canvas.width);
+			let randomY = Math.floor(Math.random() * canvas.height);
+			ctx.drawImage(bitmap, randomX, randomY);
+		}
+		
+		/*request.addEventListener("load", (response) => {
+			console.log(response.target.response);
+			let image = new Image();
+			image.src(response.target.response);
+		});
+		request.responseType = "blob";
+		request.open("GET", "http://localhost:8080/" + texturePath);
+		request.send();*/
+	}
+	
+	function mouseMoveHandler(event) {
+		let data = makePuzzlePacket(0, event.clientX, event.clientY, 0);
+		websocket.send(data);		
+	}
+	
+	let canvas = document.getElementById('game');	
+	let ctx = canvas.getContext('2d');
+	ctx.fillStyle = "magenta";
+	ctx.fillRect(0, 0, canvas.width, canvas.height);
+	
+</script>
 </html>
