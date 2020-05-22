@@ -5,11 +5,16 @@ import java.nio.ByteBuffer;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.concurrent.Callable;
 
 public class Main {
 
 	static HTTPServerFactory httpFactory;
 	static WebSocketFactory wsFactory;
+	static volatile int httpThreadCount = 0;
+	static volatile int wsThreadCount = 0;
+	static final int MAX_HTTP_THREADS = 10;
+	static final int MAX_WS_THREADS = 5;
 	
 	public static void httpThread() {
 		HTTPServer server = httpFactory.create();
@@ -50,10 +55,9 @@ public class Main {
 		}*/
 	}
 	
-	public static void main(String[] args) throws IOException {
+	public static synchronized void main(String[] args) throws IOException {
 		Runnable http = () ->  {
 			httpThread();
-			System.out.println("Ending");
 		};
 		
 		ServerSocket httpServer = new ServerSocket(8080);
@@ -83,35 +87,27 @@ public class Main {
 			}
 		};
 		
-		ArrayList<Thread> allThreads = new ArrayList<>();
-		int threadCount = 0;
-		int maxThreads = 10;
+		
+		ThreadResolver threadCleanup = (Thread t) -> {
+			if(t.getName().equals("http"))
+				httpThreadCount--;
+			if(t.getName().equals("ws"))
+				wsThreadCount--;
+		};
+		
 		while(true) {
-			if(threadCount < maxThreads) {
-				Thread httpT = new Thread(http);
-				allThreads.add(httpT);
+			if(httpThreadCount < MAX_HTTP_THREADS) {
+				Thread httpT = new NotifierThread(http, threadCleanup);
+				httpT.setName("http");
 				httpT.start();
-				threadCount++;
+				httpThreadCount++;
 			}
-			if(threadCount < maxThreads) {
-				Thread wsT = new Thread(ws);
-				allThreads.add(wsT);
+			if(wsThreadCount < MAX_WS_THREADS) {
+				Thread wsT = new NotifierThread(ws, threadCleanup);
+				wsT.setName("ws");
 				wsT.start();
-				threadCount++;
+				wsThreadCount++;
 			}
-			
-			// TODO: Hacky thread checking, ideally they notify us if they finish
-			ArrayList<Thread> toRemove = new ArrayList<>();
-			for(Thread t: allThreads) {
-				if(!t.isAlive()) {
-					threadCount--;
-					toRemove.add(t);
-				}
-			}
-			for(Thread t: toRemove) {
-				allThreads.remove(t);
-			}
-			toRemove = null;
 		}
 			
 	}
