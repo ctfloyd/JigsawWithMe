@@ -2,16 +2,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
-import java.net.ServerSocket;
 import java.net.Socket;
-import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 public class WebSocket {
 
 	public static final String HANDSHAKE = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
@@ -21,7 +18,7 @@ public class WebSocket {
 	OutputStream output;
 	Scanner s;
 	
-	public WebSocket(Socket socket) throws IOException, NoSuchAlgorithmException {
+	public WebSocket(Socket socket) throws IOException {
 		this.socket = socket;
 		input = socket.getInputStream();
 		output = socket.getOutputStream();
@@ -110,7 +107,7 @@ public class WebSocket {
 		return data;
 	}
 	
-	private void handshake() throws NoSuchAlgorithmException, IOException {
+	private void handshake() throws IOException {
 		s = new Scanner(input, "UTF-8");
 		
 		String data = null;
@@ -129,8 +126,18 @@ public class WebSocket {
 		Matcher match = Pattern.compile("Sec-WebSocket-Key: (.*)").matcher(data);
 		match.find();
 		StringBuilder response = new StringBuilder();
-		byte[] key = (match.group(1) + HANDSHAKE).getBytes("UTF-8");
-		String b64Handshake = Base64.getEncoder().encodeToString(MessageDigest.getInstance("SHA-1").digest(key));
+		byte[] key = null;
+		try {
+			key = (match.group(1) + HANDSHAKE).getBytes("UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			assert false;
+		}
+		String b64Handshake = null;
+		try {
+			b64Handshake = Base64.getEncoder().encodeToString(MessageDigest.getInstance("SHA-1").digest(key));
+		} catch (NoSuchAlgorithmException e) {
+			assert false;
+		}
 		response.append("HTTP/1.1 101 Switching Protocols\r\n");
 		response.append("Connection: Upgrade\r\n");
 		response.append("Upgrade: websocket\r\n");

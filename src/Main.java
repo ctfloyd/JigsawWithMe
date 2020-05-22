@@ -1,11 +1,6 @@
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.ServerSocket;
-import java.nio.ByteBuffer;
-import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.concurrent.Callable;
 
 public class Main {
 
@@ -22,13 +17,18 @@ public class Main {
 		server.run();
 	}
 	
-	public static void wsThread(JigsawPieceFactory puzzle) throws NoSuchAlgorithmException, UnsupportedEncodingException, IOException {
+	public static void wsThread(JigsawPieceFactory puzzle) {
 		WebSocket ws = wsFactory.create();
 		System.out.println("Created new websocket.");
 		
 		for(JigsawPiece p: puzzle.getPieces()) {
 			String texturePath = "game/0/textures" + p.getId() + ".png";
-			ws.send(texturePath.getBytes("UTF-8"));
+			try {
+				ws.send(texturePath.getBytes("UTF-8"));
+			} catch (IOException e) {
+				System.out.println("Unable to send data over websocket. Exiting now.");
+				return;
+			}
 		}
 		
 		/*boolean leave = false;
@@ -56,10 +56,6 @@ public class Main {
 	}
 	
 	public static synchronized void main(String[] args) throws IOException {
-		Runnable http = () ->  {
-			httpThread();
-		};
-		
 		ServerSocket httpServer = new ServerSocket(8080);
 		System.out.println("Started httpServer, listening for connections on port 8080...");
 		httpFactory = new HTTPServerFactory(httpServer);
@@ -78,15 +74,7 @@ public class Main {
 			pieces[i].getTexture().writeToFile("./web/game/0/textures", pieces[i].getId() + ".png");
 		}
 		
-		Runnable ws = () -> {
-			try {
-				wsThread(puzzle);
-			} catch (NoSuchAlgorithmException | IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		};
-		
+		Runnable ws = () -> wsThread(puzzle);
 		
 		ThreadResolver threadCleanup = (Thread t) -> {
 			if(t.getName().equals("http"))
@@ -97,7 +85,7 @@ public class Main {
 		
 		while(true) {
 			if(httpThreadCount < MAX_HTTP_THREADS) {
-				Thread httpT = new NotifierThread(http, threadCleanup);
+				Thread httpT = new NotifierThread(Main::httpThread, threadCleanup);
 				httpT.setName("http");
 				httpT.start();
 				httpThreadCount++;

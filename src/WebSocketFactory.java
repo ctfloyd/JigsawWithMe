@@ -11,7 +11,7 @@ public class WebSocketFactory {
 		connection = c;
 	}
 	
-	public WebSocket create() throws NoSuchAlgorithmException {
+	public WebSocket create() {
 		try {
 			return new WebSocket(connection.accept());
 		} catch (IOException e) {
