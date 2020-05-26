@@ -3,6 +3,8 @@ import java.awt.Color;
 import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Point;
+import java.awt.geom.Point2D;
+import java.awt.geom.Point2D.Float;
 import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
 import java.io.File;
@@ -52,7 +54,8 @@ public class JigsawPieceFactory {
 				
 				Raster crop = image.getRaster().createChild(startX, startY, width, height, 0, 0, null);
 				pieceTexture.setData(crop);
-				pieces[textureIndex] = new JigsawPiece(new Point(j * pieceWidth, i * pieceHeight), pieceTexture, textureIndex);
+				Point2D.Float position = new Point2D.Float(j * pieceWidth / (float)imageWidth, i * pieceHeight / (float)imageHeight);
+				pieces[textureIndex] = new JigsawPiece(position, pieceTexture, textureIndex);
 			}
 		}
 	}

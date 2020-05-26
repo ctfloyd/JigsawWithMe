@@ -22,37 +22,14 @@ public class Main {
 		System.out.println("Created new websocket.");
 		
 		for(JigsawPiece p: puzzle.getPieces()) {
-			String texturePath = "game/0/textures" + p.getId() + ".png";
+			JigsawPacket packet = new JigsawPacket(p);
 			try {
-				ws.send(texturePath.getBytes("UTF-8"));
+				ws.send(packet.toByteArray());
 			} catch (IOException e) {
 				System.out.println("Unable to send data over websocket. Exiting now.");
 				return;
 			}
 		}
-		
-		/*boolean leave = false;
-		while(!ws.isClosed() || leave) {
-			byte[] recv = null;
-			try {
-				recv = ws.recv(9);
-			} catch (IOException e) {
-				leave = true;
-				continue;
-			}
-            ByteBuffer buffer = ByteBuffer.wrap(recv);
-            int uid = buffer.getInt();
-            short posX = buffer.getShort();
-            short posY = buffer.getShort();
-            byte rotation = buffer.get();
-            StringBuilder st = new StringBuilder();
-            st.append("Received data: ");
-            st.append(" uid: " + uid);
-            st.append(" posX: " + posX);
-            st.append(" posY: " + posY);
-            st.append(" rotation: " + rotation);
-            System.out.println(st.toString());
-		}*/
 	}
 	
 	public static synchronized void main(String[] args) throws IOException {

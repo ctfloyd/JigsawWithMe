@@ -17,6 +17,18 @@
 		return view;
 	}
 	
+	function decodeJigsawPacket(buffer) {
+		let dv = new DataView(buffer, 0);
+		let id = dv.getInt16(0);
+		let x = dv.getFloat32(2);
+		let y = dv.getFloat32(6);
+		let strlen = dv.getUint8(10);
+		let texturePath = String.fromCharCode.apply(null, new Uint8Array(buffer, 11, strlen));
+		console.log(buffer);
+		console.log("Decoded jigsaw packet, received: ", {id, x, y, strlen, texturePath});
+		return {id, x, y, texturePath};
+	}
+	
 	let websocket = new WebSocket("ws://127.0.0.1:8081");
 	websocket.onopen = function (event) {
 		let canvas = document.getElementById('game');
@@ -24,7 +36,8 @@
 	}
 	websocket.onmessage = async function (event) {
 		let buffer = await event.data.arrayBuffer();
-		let texturePath = String.fromCharCode.apply(null, new Uint8Array(buffer));
+		// id, x, y, texturePath
+		let {id, x, y, texturePath} = decodeJigsawPacket(buffer);
 		
 		let request = new XMLHttpRequest();
 		let canvas = document.getElementById('game');
@@ -34,10 +47,7 @@
 		image.src = "http://localhost:8080/" + texturePath;
 		image.onload = async function() {
 			let bitmap = await createImageBitmap(image);
-			console.log(bitmap);
-			let randomX = Math.floor(Math.random() * canvas.width);
-			let randomY = Math.floor(Math.random() * canvas.height);
-			ctx.drawImage(bitmap, randomX, randomY);
+			ctx.drawImage(bitmap, x * canvas.width, y * canvas.height);
 		}
 		
 		/*request.addEventListener("load", (response) => {
