@@ -1,6 +1,7 @@
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.Date;
+import java.util.Random;
 
 public class Main {
 
@@ -47,7 +48,13 @@ public class Main {
 		
 		JigsawPieceFactory puzzle = new JigsawPieceFactory("test.png");
 		JigsawPiece[] pieces = puzzle.getPieces();
+		Random r = new Random();
 		for(int i = 0; i < pieces.length; i++) {
+			if(r.nextInt(100) < 50) {
+				pieces[i].addNotch(JigsawPiece.Side.Right);
+			} else {
+				pieces[i + 1].addLatch(JigsawPiece.Side.Bottom);
+			}
 			pieces[i].getTexture().writeToFile("./web/game/0/textures", pieces[i].getId() + ".png");
 		}
 		
