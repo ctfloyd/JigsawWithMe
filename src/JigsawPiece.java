@@ -1,5 +1,3 @@
-import java.awt.Graphics;
-import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.util.EnumMap;
@@ -102,11 +100,5 @@ public class JigsawPiece {
 		default:
 			return null;
 		}
-	}
-
-	public void paint(Graphics g) {
-		int x = (int) position.getX();
-		int y = (int) position.getY();
-		texture.paint(g, x, y);
 	}
 }

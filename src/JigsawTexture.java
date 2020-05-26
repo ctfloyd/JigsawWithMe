@@ -1,4 +1,3 @@
-import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
@@ -184,12 +183,4 @@ public class JigsawTexture {
 			return;
 		}
 	}
-	
-	public void paint(Graphics g, int x, int y) {
-//		Random r = new Random();
-//		x = r.nextInt(700);
-//		y = r.nextInt(700);
-		g.drawImage(texture, x, y, null);
-	}
-	
 }

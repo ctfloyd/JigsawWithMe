@@ -1,17 +1,8 @@
-import java.awt.Canvas;
-import java.awt.Color;
-import java.awt.Frame;
-import java.awt.Graphics;
-import java.awt.Point;
 import java.awt.geom.Point2D;
-import java.awt.geom.Point2D.Float;
 import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
 import java.io.File;
-import java.util.Random;
-
 import javax.imageio.ImageIO;
-import javax.swing.BoxLayout;
 
 public class JigsawPieceFactory {
 
@@ -62,48 +53,5 @@ public class JigsawPieceFactory {
 
 	public JigsawPiece[] getPieces() {
 		return pieces;
-	}
-
-	public static class JigsawCanvas extends Canvas {
-
-		private static final long serialVersionUID = 1L;
-		JigsawPiece[] pieces;
-		Random r;
-
-		public JigsawCanvas(JigsawPiece[] pieces) {
-			this.pieces = pieces;
-			r = new Random();
-		}
-
-		public void paint(Graphics g) {
-//			for (int i = 0; i < pieces.length; i++)
-//				pieces[i].paint(g);
-			pieces[4].paint(g);
-			pieces[5].paint(g);
-		}
-	}
-
-	public static void main(String[] args) {
-
-		JigsawPieceFactory factory = new JigsawPieceFactory("test.png");
-		JigsawPiece[] pieces = factory.getPieces();
-		pieces[4].addLatch(JigsawPiece.Side.Right);
-		pieces[4].addLatch(JigsawPiece.Side.Bottom);
-		pieces[4].addLatch(JigsawPiece.Side.Top);
-		pieces[4].addLatch(JigsawPiece.Side.Left);
-		pieces[5].addNotch(JigsawPiece.Side.Left);
-		pieces[5].addNotch(JigsawPiece.Side.Right);
-		pieces[5].addNotch(JigsawPiece.Side.Bottom);
-		pieces[5].addNotch(JigsawPiece.Side.Top);
-
-		Frame frame = new Frame();
-		Canvas canvas = new JigsawCanvas(pieces);
-		canvas.setBackground(Color.WHITE);
-		
-		frame.add(canvas);
-		frame.setBackground(Color.MAGENTA);
-		frame.setSize(1024, 1024);
-		frame.setLayout(new BoxLayout(frame, BoxLayout.X_AXIS));
-		frame.setVisible(true);
 	}
 }
