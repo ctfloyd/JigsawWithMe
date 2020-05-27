@@ -49,7 +49,7 @@ public class Main {
 		JigsawPieceFactory puzzle = new JigsawPieceFactory("test.png");
 		JigsawPiece[] pieces = puzzle.getPieces();
 		Random r = new Random();
-		for(int i = 0; i < pieces.length; i++) {
+		for(int i = 0; i < pieces.length - 1; i++) {
 			if(r.nextInt(100) < 50) {
 				pieces[i].addNotch(JigsawPiece.Side.Right);
 			} else {
