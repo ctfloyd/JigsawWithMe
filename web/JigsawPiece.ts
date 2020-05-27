@@ -1,7 +1,7 @@
-import FloatPoint from "./FloatPoint";
-import Rectangle from "./Rectangle";
+import FloatPoint from "./FloatPoint.js";
+import Rectangle from "./Rectangle.js";
 
-export class JigsawPiece {
+export default class JigsawPiece {
 	
 	id: number;
 	texturePath: string;
@@ -35,7 +35,8 @@ export class JigsawPiece {
 			await this.generateBitmap();
 		
 		let center = this.computeCenter();
-		this.renderingContext.drawImage(this.bitmap, center.x() * this.canvas.width, center.y() * this.canvas.height);
+		// TODO: this should compute from center, once its computed correctly
+		this.renderingContext.drawImage(this.bitmap, this.boundingBox.getTopLeftCorner().x() * this.canvas.width, this.boundingBox.getTopLeftCorner().y() * this.canvas.height);
 	}
 	
 	computeCenter(): FloatPoint {

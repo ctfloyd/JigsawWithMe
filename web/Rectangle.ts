@@ -1,4 +1,4 @@
-import FloatPoint from "./FloatPoint";
+import FloatPoint from "./FloatPoint.js";
 
 export default class Rectangle {
 	

@@ -1,74 +1,10 @@
 <html>
 <head>
 <title> Websocket Test </title>
+<script src="./Game.js" type="module"></script>
 </head>
 <body>
 <center> <h1> Hello WebSockets! </h1> </center>
 <canvas id="game" width="1280px" height="720px"></canvas>
 </body>
-<script>
-	function makePuzzlePacket(uid, posX, posY, rot) {
-		let buf = new ArrayBuffer(9);
-		let view = new DataView(buf, 0);
-		view.setInt32(0, uid);
-		view.setInt16(4, posX);
-		view.setInt16(6, posY);
-		view.setInt8(8, rot);
-		return view;
-	}
-	
-	function decodeJigsawPacket(buffer) {
-		let dv = new DataView(buffer, 0);
-		let id = dv.getInt16(0);
-		let x = dv.getFloat32(2);
-		let y = dv.getFloat32(6);
-		let strlen = dv.getUint8(10);
-		let texturePath = String.fromCharCode.apply(null, new Uint8Array(buffer, 11, strlen));
-		console.log(buffer);
-		console.log("Decoded jigsaw packet, received: ", {id, x, y, strlen, texturePath});
-		return {id, x, y, texturePath};
-	}
-	
-	let websocket = new WebSocket("ws://127.0.0.1:8081");
-	websocket.onopen = function (event) {
-		let canvas = document.getElementById('game');
-		canvas.addEventListener('mousemove', mouseMoveHandler);
-	}
-	websocket.onmessage = async function (event) {
-		let buffer = await event.data.arrayBuffer();
-		// id, x, y, texturePath
-		let {id, x, y, texturePath} = decodeJigsawPacket(buffer);
-		
-		let request = new XMLHttpRequest();
-		let canvas = document.getElementById('game');
-		let ctx = canvas.getContext('2d');
-		
-		let image = new Image();
-		image.src = "http://localhost:8080/" + texturePath;
-		image.onload = async function() {
-			let bitmap = await createImageBitmap(image);
-			ctx.drawImage(bitmap, x * canvas.width, y * canvas.height);
-		}
-		
-		/*request.addEventListener("load", (response) => {
-			console.log(response.target.response);
-			let image = new Image();
-			image.src(response.target.response);
-		});
-		request.responseType = "blob";
-		request.open("GET", "http://localhost:8080/" + texturePath);
-		request.send();*/
-	}
-	
-	function mouseMoveHandler(event) {
-		let data = makePuzzlePacket(0, event.clientX, event.clientY, 0);
-		websocket.send(data);		
-	}
-	
-	let canvas = document.getElementById('game');	
-	let ctx = canvas.getContext('2d');
-	ctx.fillStyle = "magenta";
-	ctx.fillRect(0, 0, canvas.width, canvas.height);
-	
-</script>
 </html>
