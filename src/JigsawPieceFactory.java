@@ -1,4 +1,5 @@
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
 import java.io.File;
@@ -46,7 +47,10 @@ public class JigsawPieceFactory {
 				Raster crop = image.getRaster().createChild(startX, startY, width, height, 0, 0, null);
 				pieceTexture.setData(crop);
 				Point2D.Float position = new Point2D.Float(j * pieceWidth / (float)imageWidth, i * pieceHeight / (float)imageHeight);
-				pieces[textureIndex] = new JigsawPiece(position, pieceTexture, textureIndex);
+				float rectWidth = pieceWidth / (float) imageWidth;
+				float rectHeight = pieceHeight / (float) imageHeight;
+				Rectangle2D.Float r = new Rectangle2D.Float((float)position.getX(), (float) position.getY(), rectWidth, rectHeight);
+				pieces[textureIndex] = new JigsawPiece(r, pieceTexture, textureIndex);
 			}
 		}
 	}

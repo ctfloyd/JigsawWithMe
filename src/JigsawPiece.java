@@ -1,4 +1,6 @@
+import java.awt.Rectangle;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.EnumMap;
 
@@ -9,7 +11,7 @@ public class JigsawPiece {
 	};
 
 	private short id;
-	private Point2D.Float position;
+	private Rectangle2D.Float rect;
 	private JigsawTexture texture;
 	private EnumMap<Side, Boolean> latched;
 	private EnumMap<Side, Boolean> notched;
@@ -17,8 +19,8 @@ public class JigsawPiece {
 
 	// Assumes a scaled image to account for latches and notches, sets unused pixels
 	// transparency to 0;
-	public JigsawPiece(Point2D.Float position, BufferedImage image, short id) {
-		this.position = position;
+	public JigsawPiece(Rectangle2D.Float rect, BufferedImage image, short id) {
+		this.rect = rect;
 		this.id = id;
 		texture = new JigsawTexture(image, 1.5);
 		latched = new EnumMap<>(Side.class);
@@ -50,8 +52,8 @@ public class JigsawPiece {
 		return id;
 	}
 	
-	public Point2D.Float getPosition() {
-		return position;
+	public Rectangle2D.Float getRect() {
+		return rect;
 	}
 
 	public void addLatch(Side side) {
