@@ -17,8 +17,10 @@ function decodeJigsawPacket(buffer) {
 	let id = dv.getInt16(0);
 	let x = dv.getFloat32(2);
 	let y = dv.getFloat32(6);
-	let strlen = dv.getUint8(10);
-	let texturePath = String.fromCharCode.apply(null, new Uint8Array(buffer, 11, strlen));
+	let width = dv.getFloat32(10);
+	let height = dv.getFloat32(14);
+	let strlen = dv.getUint8(15);
+	let texturePath = String.fromCharCode.apply(null, new Uint8Array(buffer, 16, strlen));
 	console.log(buffer);
 	console.log("Decoded jigsaw packet, received: ", {id, x, y, strlen, texturePath});
 	return {id, x, y, texturePath};
@@ -58,7 +60,7 @@ function draw() {
 	requestAnimationFrame(draw);
 }
 
-let canvas = <HTMLCanvasElement>document.getElementById('game');	
+let canvas = <HTMLCanvasElement>document.getElementById('game');
 let ctx = canvas.getContext('2d');
 ctx.fillStyle = "magenta";
 ctx.fillRect(0, 0, canvas.width, canvas.height);
