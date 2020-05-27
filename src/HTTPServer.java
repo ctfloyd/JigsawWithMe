@@ -152,6 +152,8 @@ public class HTTPServer implements Runnable {
 	private String getContentType(String fileRequested) {
 		if(fileRequested.endsWith(".htm") || fileRequested.endsWith(".html"))
 			return "text/html";
+		else if(fileRequested.endsWith(".js") || fileRequested.endsWith(".ts"))
+			return "application/javascript";
 		else
 			return "text/plain";
 	}
