@@ -12,8 +12,11 @@ public class JigsawPieceFactory {
 
 	static final int WIDTH = 3;
 	static final int HEIGHT = 3;
+	
+	private int targetWidth;
+	private int targetHeight;
 
-	public JigsawPieceFactory(String imagePath) {
+	public JigsawPieceFactory(String imagePath, int targetWidth, int targetHeight) {
 		image = null;
 		try {
 			image = ImageIO.read(new File(imagePath));
@@ -24,6 +27,8 @@ public class JigsawPieceFactory {
 		}
 		System.out.println("Image Type: " + image.getType());
 		pieces = new JigsawPiece[WIDTH * HEIGHT];
+		this.targetWidth = targetWidth;
+		this.targetHeight = targetHeight;
 		splitImage();
 	}
 
@@ -43,13 +48,10 @@ public class JigsawPieceFactory {
 				int startX = (int) (j * pieceWidth - pieceWidth * 0.25 > 0 ? j * pieceWidth - pieceWidth * 0.25 : 0);
 				int startY = (int) (i * pieceHeight - pieceHeight * 0.25 > 0 ? i * pieceWidth - pieceWidth * 0.25 : 0);
 				
-				
 				Raster crop = image.getRaster().createChild(startX, startY, width, height, 0, 0, null);
 				pieceTexture.setData(crop);
-				Point2D.Float position = new Point2D.Float(j * pieceWidth / (float)imageWidth, i * pieceHeight / (float)imageHeight);
-				float rectWidth = pieceWidth / (float) imageWidth;
-				float rectHeight = pieceHeight / (float) imageHeight;
-				Rectangle2D.Float r = new Rectangle2D.Float((float)position.getX(), (float) position.getY(), rectWidth, rectHeight);
+				Point2D.Float position = new Point2D.Float(startX / (float)targetWidth, startY / (float)targetHeight);
+				Rectangle2D.Float r = new Rectangle2D.Float((float)position.getX(), (float) position.getY(), width / (float)targetWidth, height / (float)targetHeight);
 				pieces[textureIndex] = new JigsawPiece(r, pieceTexture, textureIndex);
 			}
 		}
