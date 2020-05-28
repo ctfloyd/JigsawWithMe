@@ -36,7 +36,7 @@ export default class Rectangle {
 		if(this.getTopLeftCorner().x() > point.x() || this.getBottomRightCorner().x() < point.x())
 			return false;
 		
-		if(this.getTopLeftCorner().y() < point.y() || this.getBottomRightCorner().y() > point.y())
+		if(this.getTopLeftCorner().y() > point.y() || this.getBottomRightCorner().y() < point.y())
 			return false;
 		
 		return true;
@@ -52,7 +52,7 @@ export default class Rectangle {
 	}
 	
 	height() {
-		return this.topLeft.y() - this.bottomRight.y();
+		return this.bottomRight.y() - this.topLeft.y();
 	}
 	
 }
