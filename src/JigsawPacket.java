@@ -13,7 +13,7 @@ public class JigsawPacket {
 		String texturePath = "game/0/textures" + piece.getId() + ".png";
 		
 		// TODO: size match this;
-		ByteBuffer bytes = ByteBuffer.allocate(32);
+		ByteBuffer bytes = ByteBuffer.allocate(48);
 		bytes.putShort(piece.getId());
 		Rectangle2D.Float rect = piece.getRect();
 		float topLeftX = (float) rect.getX();
