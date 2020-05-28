@@ -11,6 +11,7 @@ public class Main {
 	static volatile int wsThreadCount = 0;
 	static final int MAX_HTTP_THREADS = 10;
 	static final int MAX_WS_THREADS = 5;
+	static WebSocketConnectionsHandler wsHandler;
 	
 	public static void httpThread() {
 		HTTPServer server = httpFactory.create();
@@ -34,6 +35,8 @@ public class Main {
 	}
 	
 	public static synchronized void main(String[] args) throws IOException {
+		wsHandler = new WebSocketConnectionsHandler();
+		
 		ServerSocket httpServer = new ServerSocket(8080);
 		System.out.println("Started httpServer, listening for connections on port 8080...");
 		httpFactory = new HTTPServerFactory(httpServer);
@@ -46,7 +49,7 @@ public class Main {
 		System.out.println("Started websocket server, listening for connections on port 8081...");
 		wsFactory = new WebSocketFactory(wsServer);
 		
-		JigsawPieceFactory puzzle = new JigsawPieceFactory("test.png");
+		JigsawPieceFactory puzzle = new JigsawPieceFactory("test.png", 1280, 720);
 		JigsawPiece[] pieces = puzzle.getPieces();
 		Random r = new Random();
 		for(int i = 0; i < pieces.length - 1; i++) {
