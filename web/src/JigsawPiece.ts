@@ -20,6 +20,10 @@ export default class JigsawPiece {
 		this.renderingContext = canvas.getContext('2d');
 	}
 	
+	getBoundingBox(): Rectangle {
+		return this.boundingBox;
+	}
+	
 	async generateBitmap(): Promise<void> {
 		let createBitmapPromise = new Promise<HTMLImageElement>((resolve, reject) => {
 			let image = new Image();
@@ -36,7 +40,7 @@ export default class JigsawPiece {
 		
 		let center = this.computeCenter();
 		// TODO: this should compute from center, once its computed correctly
-		this.renderingContext.drawImage(this.bitmap, this.boundingBox.getTopLeftCorner().x() * this.canvas.width, this.boundingBox.getTopLeftCorner().y() * this.canvas.height);
+		this.renderingContext.drawImage(this.bitmap, this.boundingBox.getTopLeftCorner().x(), this.boundingBox.getTopLeftCorner().y());
 	}
 	
 	computeCenter(): FloatPoint {
